@@ -4,7 +4,7 @@ import {SyntheticEvent} from "react";
 import {useAppSelector} from "../../hooks/useAppSelector";
 import {selectAppError} from "../../../app/appSelectors";
 import {useAppDispatch} from "../../hooks/useAppDispatch";
-import {setAppErrorAC} from "../../../app/app-reducer";
+import {setAppError} from "../../../app/appSlice";
 
 
 type Props = {
@@ -19,7 +19,7 @@ export const ErrorSnackbar = (props: Props) => {
         if (reason === "clickaway") {
             return;
         }
-        dispatch(setAppErrorAC(null));
+        dispatch(setAppError({error: null}));
     }
 
     return (

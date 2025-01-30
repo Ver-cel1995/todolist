@@ -11,9 +11,8 @@ import {useAppSelector} from "../../../../common/hooks/useAppSelector";
 import {getTheme} from "../../../../common/theme/theme";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import s from './Login.module.css'
-import {loginTC} from "../../model/auth-reducer";
+import {loginTC, selectAuth} from "../../model/authSlice";
 import {useAppDispatch} from "../../../../common/hooks/useAppDispatch";
-import {selectAuth} from "../../model/authSelectors";
 import {useEffect} from "react";
 import {useNavigate} from "react-router";
 import {Path} from "../../../../common/routing/Routing";

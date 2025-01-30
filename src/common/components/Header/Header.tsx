@@ -3,16 +3,15 @@ import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
 import Switch from "@mui/material/Switch";
 import Toolbar from "@mui/material/Toolbar";
-import React, {useEffect} from "react";
-import {changeThemeAC} from "../../../app/app-reducer";
+import React from "react";
+import {changeTheme} from "../../../app/appSlice";
 import {selectAppStatus, selectThemeMode} from "../../../app/appSelectors";
 import {useAppDispatch} from "../../hooks/useAppDispatch";
 import {useAppSelector} from "../../hooks/useAppSelector";
 import {getTheme} from "../../theme/theme";
 import {MenuButton} from "../MenuButton/MenuButton";
 import LinearProgress from "@mui/material/LinearProgress";
-import {logoutTC} from "../../../features/auth/model/auth-reducer";
-import {selectAuth} from "../../../features/auth/model/authSelectors";
+import {logoutTC, selectAuth} from "../../../features/auth/model/authSlice";
 
 export const Header = () => {
 
@@ -25,7 +24,8 @@ export const Header = () => {
 	const theme = getTheme(themeMode)
 
 	const changeModeHandler = () => {
-		dispatch(changeThemeAC(themeMode === 'light' ? 'dark' : 'light'))
+		dispatch(changeTheme({themeMode: themeMode === 'light' ? 'dark' : 'light'
+	}))
 	}
 
 	const auth = useAppSelector(selectAuth)

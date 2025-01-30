@@ -2,24 +2,23 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Unstable_Grid2";
 import React, {useEffect} from "react";
 import {AddItemForm} from "../common/components/AddItemForm/AddItemForm";
-import {useAppDispatch} from "../common/hooks/useAppDispatch";
-import {addTodolistAC, addTodolistTC} from "../features/todolists/model/todolists-reducer";
 import {Todolists} from "../features/todolists/ui/Todolists/Todolists";
 import {useAppSelector} from "../common/hooks/useAppSelector";
-import {selectAuth} from "../features/auth/model/authSelectors";
 import {useNavigate} from "react-router";
 import {Path} from "../common/routing/Routing";
+import {selectAuth} from "../features/auth/model/authSlice";
+import {useCreateTodolistMutation} from "../features/todolists/api/_todolistsApi";
 
 export const Main = () => {
-
-	const dispatch = useAppDispatch()
 
 	const auth = useAppSelector(selectAuth)
 
 	const navigate = useNavigate();
 
+	const [createTodolist] = useCreateTodolistMutation()
+
 	const addTodolist = (title: string) => {
-		dispatch(addTodolistTC(title))
+		createTodolist(title)
 	}
 
 	useEffect(() => {

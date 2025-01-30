@@ -1,6 +1,6 @@
 import {ChangeEvent, useState} from "react";
 import TextField from "@mui/material/TextField";
-import {RequestStatus} from "../../../app/app-reducer";
+import {RequestStatus} from "../../../app/appSlice";
 
 type Props = {
 	value: string
