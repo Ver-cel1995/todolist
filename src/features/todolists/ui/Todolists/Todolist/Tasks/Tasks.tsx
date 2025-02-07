@@ -1,11 +1,9 @@
 import List from "@mui/material/List";
-import {useAppSelector} from "../../../../../../common/hooks/useAppSelector";
-import {DomainTodolist} from "../../../../model/todolistsSlice";
 import {Task} from "./Task/Task";
 import {TaskStatus} from "../../../../../../common/enums/enums";
-import {useEffect} from "react";
-import {useAppDispatch} from "../../../../../../common/hooks/useAppDispatch";
-import {fetchTasksTC, selectTasks} from "../../../../model/tasksSlice";
+import {useGetTasksQuery} from "../../../../api/tasksApi";
+import {TasksSkeleton} from "../../../skeletons/TasksSkeleton/TasksSkeleton";
+import {DomainTodolist} from "../../../../lib/types/types";
 
 type Props = {
     todolist: DomainTodolist
@@ -13,25 +11,20 @@ type Props = {
 
 export const Tasks = ({todolist}: Props) => {
 
-    const tasks = useAppSelector(selectTasks)
+    const {data, isLoading} = useGetTasksQuery({todolistId: todolist.id})
 
-    const dispatch = useAppDispatch()
+    if (isLoading) {
+        return <TasksSkeleton />
+    }
 
-
-    useEffect(() => {
-        dispatch(fetchTasksTC(todolist.id))
-    }, []);
-
-    const allTodolistTasks = tasks[todolist.id]
-
-    let tasksForTodolist = allTodolistTasks
+    let tasksForTodolist = data?.items
 
     if (todolist.filter === 'active') {
-        tasksForTodolist = allTodolistTasks.filter(task => task.status === TaskStatus.New)
+        tasksForTodolist = tasksForTodolist?.filter(task => task.status === TaskStatus.New)
     }
 
     if (todolist.filter === 'completed') {
-        tasksForTodolist = allTodolistTasks.filter(task => task.status === TaskStatus.Completed)
+        tasksForTodolist = tasksForTodolist?.filter(task => task.status === TaskStatus.Completed)
     }
 
     return (
@@ -39,9 +32,9 @@ export const Tasks = ({todolist}: Props) => {
             {
                 tasksForTodolist?.length === 0
                     ? <p>Тасок нет</p>
-                    : <List>
+                    : <List key={todolist.id}>
                         {tasksForTodolist?.map((task) => {
-                            return <Task task={task} todolist={todolist}/>
+                            return <Task task={task} todolist={todolist} key={task.id}/>
                             })}
                     </List>
             }

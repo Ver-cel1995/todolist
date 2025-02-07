@@ -11,11 +11,13 @@ import {useAppSelector} from "../../../../common/hooks/useAppSelector";
 import {getTheme} from "../../../../common/theme/theme";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import s from './Login.module.css'
-import {loginTC, selectAuth} from "../../model/authSlice";
+import {selectAuth, setIsLoggedIn} from "../../model/authSlice";
 import {useAppDispatch} from "../../../../common/hooks/useAppDispatch";
 import {useEffect} from "react";
 import {useNavigate} from "react-router";
 import {Path} from "../../../../common/routing/Routing";
+import {useLoginMutation} from "../../api/authApi";
+import {ResultCode} from "../../../../common/enums/enums";
 
 export type LoginInputs = {
     email: string
@@ -28,6 +30,8 @@ export const Login = () => {
     const themeMode = useAppSelector(selectThemeMode)
     const theme = getTheme(themeMode)
     const dispatch = useAppDispatch()
+
+    const [login] = useLoginMutation()
 
     const auth = useAppSelector(selectAuth)
 
@@ -42,8 +46,16 @@ export const Login = () => {
     } = useForm<LoginInputs>({defaultValues: {email: '', password: '', rememberMe: false}})
 
     const onSubmit: SubmitHandler<LoginInputs> = data => {
-        dispatch(loginTC(data))
-        reset()
+        login(data)
+            .then((res) => {
+                if (res.data?.resultCode === ResultCode.Success) {
+                    dispatch(setIsLoggedIn({ isLoggedIn: true }))
+                    localStorage.setItem("sn-token", res.data.data.token)
+                }
+            })
+            .finally(() => {
+                reset()
+            })
     }
 
 

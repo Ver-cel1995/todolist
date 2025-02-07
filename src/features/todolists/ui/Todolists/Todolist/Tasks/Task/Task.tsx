@@ -4,12 +4,11 @@ import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
 import {ChangeEvent} from "react";
 import {EditableSpan} from "../../../../../../../common/components/EditableSpan/EditableSpan";
-import {useAppDispatch} from "../../../../../../../common/hooks/useAppDispatch";
-import {removeTaskTC, updateTaskTC} from "../../../../../model/tasksSlice";
-import {DomainTodolist} from "../../../../../model/todolistsSlice";
 import {getListItemSx} from "./Task.styles";
-import {DomainTask} from "../../../../../api/tasksApi.types";
 import {TaskStatus} from "../../../../../../../common/enums/enums";
+import {useDeleteTaskMutation, useUpdateTaskMutation} from "../../../../../api/tasksApi";
+import {DomainTodolist} from "../../../../../lib/types/types";
+import {DomainTask, UpdateTaskModel} from "../../../../../api/tasksApi.types";
 
 
 type Props = {
@@ -19,19 +18,39 @@ type Props = {
 
 export const Task = ({task, todolist}: Props) => {
 
-	const dispatch = useAppDispatch()
+	const [removeTask] = useDeleteTaskMutation();
+	const [updateTask] = useUpdateTaskMutation();
 
 	const removeTaskHandler = () => {
-		dispatch(removeTaskTC({taskId: task.id, todolistId: todolist.id}))
+		removeTask({taskId: task.id, todolistId: todolist.id})
 	}
 
 	const changeTaskStatusHandler = (e: ChangeEvent<HTMLInputElement>) => {
 		let status = e.currentTarget.checked ? TaskStatus.Completed : TaskStatus.New
-		dispatch(updateTaskTC({domainModel: {status}, taskId: task.id, todolistId: task.todoListId}))
+
+		const model: UpdateTaskModel = {
+			status,
+			title: task.title,
+			deadline: task.deadline,
+			description: task.description,
+			priority: task.priority,
+			startDate: task.startDate,
+		}
+
+		updateTask({ taskId: task.id, todolistId: todolist.id, model })
 	}
 
 	const changeTaskTitleHandler = (title: string) => {
-		dispatch(updateTaskTC({domainModel: {title}, taskId: task.id, todolistId: task.todoListId}))
+		const model: UpdateTaskModel = {
+			status: task.status,
+			title,
+			deadline: task.deadline,
+			description: task.description,
+			priority: task.priority,
+			startDate: task.startDate,
+		}
+
+		updateTask({ taskId: task.id, todolistId: todolist.id, model })
 	}
 
 	return (

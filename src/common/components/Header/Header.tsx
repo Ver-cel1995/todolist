@@ -11,38 +11,56 @@ import {useAppSelector} from "../../hooks/useAppSelector";
 import {getTheme} from "../../theme/theme";
 import {MenuButton} from "../MenuButton/MenuButton";
 import LinearProgress from "@mui/material/LinearProgress";
-import {logoutTC, selectAuth} from "../../../features/auth/model/authSlice";
+import {selectAuth, setIsLoggedIn} from "../../../features/auth/model/authSlice";
+import {ResultCode} from "../../enums/enums";
+import {useLogoutMutation} from "../../../features/auth/api/authApi";
+import {baseApi} from "../../../app/baseApi";
 
 export const Header = () => {
 
-	const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch()
 
-	const themeMode = useAppSelector(selectThemeMode)
+    const themeMode = useAppSelector(selectThemeMode)
 
-	const status = useAppSelector(selectAppStatus)
+    const status = useAppSelector(selectAppStatus)
 
-	const theme = getTheme(themeMode)
+    const theme = getTheme(themeMode)
 
-	const changeModeHandler = () => {
-		dispatch(changeTheme({themeMode: themeMode === 'light' ? 'dark' : 'light'
-	}))
-	}
+    const [logout] = useLogoutMutation()
 
-	const auth = useAppSelector(selectAuth)
+    const changeModeHandler = () => {
+        dispatch(changeTheme({
+            themeMode: themeMode === 'light' ? 'dark' : 'light'
+        }))
+    }
 
-	return (
-		<AppBar position="static" sx={{mb: '30px'}}>
-			<Toolbar sx={{display: 'flex', justifyContent: 'space-between'}}>
-				<IconButton color="inherit">
-					<MenuIcon/>
-				</IconButton>
-				<div>
-					{auth && <MenuButton onClick={() => dispatch(logoutTC())}>Logout</MenuButton>}
-					<MenuButton background={theme.palette.primary.dark}>Faq</MenuButton>
-					<Switch color={'default'} onChange={changeModeHandler}/>
-				</div>
-			</Toolbar>
-			{status === 'loading' && <LinearProgress/>}
-		</AppBar>
-	)
+    const logoutHandler = () => {
+        logout().then((res) => {
+            if (res.data?.resultCode === ResultCode.Success) {
+                dispatch(setIsLoggedIn({isLoggedIn: false}))
+                localStorage.removeItem("sn-token")
+                // dispatch(baseApi.util.resetApiState()) зачищает весь кеш
+            }
+        }).then( res => {
+            dispatch(baseApi.util.invalidateTags(['Todolist', 'Task'])) // зачищает весь кеш определенного тега
+        } )
+    }
+
+    const auth = useAppSelector(selectAuth)
+
+    return (
+        <AppBar position="static" sx={{mb: '30px'}}>
+            <Toolbar sx={{display: 'flex', justifyContent: 'space-between'}}>
+                <IconButton color="inherit">
+                    <MenuIcon/>
+                </IconButton>
+                <div>
+                    {auth && <MenuButton onClick={logoutHandler}>Logout</MenuButton>}
+                    <MenuButton background={theme.palette.primary.dark}>Faq</MenuButton>
+                    <Switch color={'default'} onChange={changeModeHandler}/>
+                </div>
+            </Toolbar>
+            {status === 'loading' && <LinearProgress/>}
+        </AppBar>
+    )
 }
