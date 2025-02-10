@@ -27,7 +27,7 @@ export type DomainTask = {
 }
 
 export type UpdateTaskModel = {
-    status?: TaskStatus,
+    status: TaskStatus,
     title?: string,
     deadline?: string,
     description?: string,

@@ -2,6 +2,8 @@ import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 import {setAppError} from "./appSlice";
 
 export const baseApi = createApi({
+    keepUnusedDataFor: 5, // за сколько секунд удалится кеш, его можно указывать для конкретного endpoint'a
+    refetchOnReconnect: true, // где важно автоматически получать актуальные данные после восстановления сети
     reducerPath: 'todolistsApi', // name
     baseQuery: async (args, api, extraOptions) => {
         const result = await fetchBaseQuery({
@@ -11,7 +13,6 @@ export const baseApi = createApi({
                 headers.set('Authorization', `Bearer ${localStorage.getItem('sn-token')}`)
             },
         })(args, api, extraOptions)
-
         if (result.error) {
             if (result.error.status === 'FETCH_ERROR') {
                 api.dispatch(setAppError({ error: result.error.error }))
