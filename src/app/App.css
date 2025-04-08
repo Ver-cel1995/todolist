@@ -1,0 +1,14 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.is-done {
+  opacity: 0.5;
+}
